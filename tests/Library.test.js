@@ -4,32 +4,53 @@ const Library = require('../src/Library');
 describe('Library Service', () => {
     let library;
 
-    //initialize a new library before each test
+    // Initialize a new library before each test
     beforeEach(() => {
         library = new Library();
     });
 
-    //addBook method testing
-    it('should add a new book to the library', () => {
-        const book1 = new Book('1', 'JavaScript Basics', 'Dev Kapadia', 2023);
-        const book2 = new Book('2', 'Advanced JavaScript', 'Dev Kapadia', 2024);
+    // addBook method testing
+    describe('addBook method', () => {
+        // Test adding a new book to the library
+        it('should add a new book to the library', () => {
+            const book1 = new Book('1', 'JavaScript Basics', 'Dev Kapadia', 2023);
+            const book2 = new Book('2', 'Advanced JavaScript', 'Dev Kapadia', 2024);
 
-        library.addBook(book1);
-        expect(library.books.length).toBe(1);
-        expect(library.books[0]).toEqual(book1);
+            library.addBook(book1);
+            expect(library.books.length).toBe(1);
+            expect(library.books[0]).toEqual(book1);
 
-        library.addBook(book2);
-        expect(library.books.length).toBe(2);
-        expect(library.books[1]).toEqual(book2);
+            library.addBook(book2);
+            expect(library.books.length).toBe(2);
+            expect(library.books[1]).toEqual(book2);
+        });
+
+        // Test throwing an error when adding a book with a duplicate ISBN
+        it('should throw an error when adding a book with a duplicate ISBN', () => {
+            const book1 = new Book('1', 'JavaScript Basics', 'Dev Kapadia', 2024);
+            const book2 = new Book('1', 'Advanced JavaScript', 'John Doe', 2023);
+
+            library.addBook(book1);
+            expect(() => library.addBook(book2)).toThrow('A book with this ISBN already exists');
+        });
     });
 
-    //throw an error when adding a book with a duplicate ISBN
-    it('should throw an error when adding a book with a duplicate ISBN', () => {
-        const book1 = new Book('1', 'JavaScript Basics', 'Dev Kapadia', 2024);
-        const book2 = new Book('1', 'Advanced JavaScript', 'John Doe', 2023);
+    // borrowBook method testing
+    describe('borrowBook method', () => {
+        // Test successfully borrowing a book if it is available
+        it('should allow borrowing a book if it is available', () => {
+            const book = new Book('1', 'JavaScript Basics', 'Dev Kapadia', 2024);
+            library.addBook(book);
+            library.borrowBook('1');
+            expect(library.books[0].isAvailable).toBe(false);
+        });
 
-        library.addBook(book1);
-
-        expect(() => library.addBook(book2)).toThrow('A book with this ISBN already exists');
+        // Test throwing an error if the book is not available
+        it('should throw an error if the book is not available', () => {
+            const book = new Book('1', 'JavaScript Basics', 'Dev Kapadia', 2024);
+            library.addBook(book);
+            library.borrowBook('1');
+            expect(() => library.borrowBook('1')).toThrow('Book is not available');
+        });
     });
 });
